@@ -40,22 +40,12 @@ class TestDataSource(unittest.TestCase):
             f.write("1-1,1-2\n")
             f.write("2-1,2-2")
 
-        # create file with two rows two cols
-        file_with_header_name = 'file_with_header.csv'
-        if os.path.isfile(file_with_header_name ):
-            os.remove(file_with_header_name)
-        with open(file_with_header_name, "w") as f:
-            f.write("first header,second header\n")
-            f.write("1-1,1-2\n")
-            f.write("2-1,2-2")
-
 
     def tearDown(self):
         os.remove('empty_file.csv')
         os.remove('one_row_file.csv')
         os.remove('two_rows_file.csv')
         os.remove('two_rows_two_cols_file.csv')
-        os.remove('file_with_header.csv')
 
 
     def test_DataSource_ingest_csv_fails_with_no_arguments(self):
