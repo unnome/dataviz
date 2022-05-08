@@ -10,7 +10,7 @@ class DataSource(object):
     supported_file_extensions = {".csv", ".tsv"}
 
 
-    def get_file_extension(self):
+    def get_file_extension_from_path(self):
         return self.file_path[-4:]
 
 
@@ -45,7 +45,7 @@ class DataSource(object):
 
     def file_extension_is_supported(self):
         #check for file extension
-        if self.get_file_extension() not in self.supported_file_extensions:
+        if self.get_file_extension_from_path() not in self.supported_file_extensions:
             raise ValueError(f"Received {self.file_path}. Please provide a file with any of the following extensions: {self.supported_file_extensions}")
         return True
         
@@ -84,15 +84,15 @@ class DataSource(object):
         return self.data
 
 
-    def get_extension(self):
-        return self.data
+    def get_file_extension(self):
+        return self.file_extension
 
 
     def __init__(self, *args, **kwargs):
         if self.arguments_are_valid(*args, **kwargs):
             self.file_path = self.set_file_path(*args, **kwargs)
             if self.validate_path():
-                self.file_extension = self.get_file_extension()
+                self.file_extension = self.get_file_extension_from_path()
                 self.data = self.ingest_data()
 
 

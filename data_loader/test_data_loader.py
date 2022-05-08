@@ -107,3 +107,6 @@ class TestDataSource(unittest.TestCase):
         self.assertEqual([["1-1", "1-2"],["2-1", "2-2"]], data)
 
 
+    def test_DS_get_file_extension_returns_file_extension(self):
+        file_extension = DataSource('tsv_two_rows_two_cols_file.tsv').get_file_extension()
+        self.assertEqual('.tsv', file_extension)
