@@ -11,10 +11,20 @@ class DataSource(object):
 
 
     def get_file_extension(self):
-        return self.path[-4:]
+        return self.file_path[-4:]
 
 
-    def path_is_validated(self,*args, **kwargs):
+    def set_file_path(self, *args, **kwargs):
+        file_path = None
+        if args:
+            file_path = args[0]
+        elif kwargs:
+            file_path = kwargs.values()["path"]
+
+        return file_path
+
+
+    def arguments_are_valid(self, *args, **kwargs):
         # check how many arguments we got
         if len(args) + len(kwargs.keys()) != 1:
             raise SyntaxError(f"Please provide one single argument. You provided {len(args)} args and {len(kwargs.keys())}"
@@ -23,20 +33,27 @@ class DataSource(object):
         if kwargs:
             if "path" not in kwargs:
                 raise SyntaxError("Just provide the `path` argument.")
-            self.path = kwargs.values()["path"]
+        return True
 
-        if args:
-            self.path = args[0]
 
+    def file_in_path_exists(self):
         # check if file exists
-        if not os.path.isfile(self.path):
-            raise ValueError(f"Path {self.path} doesn't exist.")
+        if not os.path.isfile(self.file_path):
+            raise ValueError(f"Path {self.file_path} doesn't exist.")
+        return True
+        
+
+    def file_extension_is_supported(self):
         #check for file extension
         if self.get_file_extension() not in self.supported_file_extensions:
-            raise ValueError(f"Received {self.path}. Please provide a file with any of the following extensions: {self.supported_file_extensions}")
+            raise ValueError(f"Received {self.file_path}. Please provide a file with any of the following extensions: {self.supported_file_extensions}")
+        return True
+        
 
-        return self.path
-
+    def validate_path(self):
+        if self.file_in_path_exists() and self.file_extension_is_supported():
+            return True
+        
 
     def ingest_data(self):
         if self.file_extension == '.csv':
@@ -47,7 +64,7 @@ class DataSource(object):
 
     def ingest_csv(self):
         csvdata = []
-        with open(self.path, newline='\n') as csvfile:
+        with open(self.file_path, newline='\n') as csvfile:
             reader = csv.reader(csvfile, delimiter = ',')
             for row in reader:
                 csvdata.append(row)
@@ -56,7 +73,7 @@ class DataSource(object):
 
     def ingest_tsv(self):
         tsvdata = []
-        with open(self.path, newline='\n') as tsvfile:
+        with open(self.file_path, newline='\n') as tsvfile:
             reader = csv.reader(tsvfile, delimiter = '\t')
             for row in reader:
                 tsvdata.append(row)
@@ -72,8 +89,10 @@ class DataSource(object):
 
 
     def __init__(self, *args, **kwargs):
-        if self.path_is_validated(*args, **kwargs):
-            self.file_extension = self.get_file_extension()
-            self.data = self.ingest_data()
+        if self.arguments_are_valid(*args, **kwargs):
+            self.file_path = self.set_file_path(*args, **kwargs)
+            if self.validate_path():
+                self.file_extension = self.get_file_extension()
+                self.data = self.ingest_data()
 
 
