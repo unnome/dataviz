@@ -5,41 +5,47 @@ import os
 
 class DataSource(object):
 
-    def load_csv(*args, **kwargs):
+    data = []
 
+    def path_is_validated(self,*args, **kwargs):
         # check how many arguments we got
         if len(args) + len(kwargs.keys()) != 1:
-            raise SyntaxError("Please provide one single argument.")
-
+            raise SyntaxError(f"Please provide one single argument. You provided {len(args)} args and {len(kwargs.keys())}"
+            f" kwargs.\n {[arg for arg in args]}")
         # check if we got keyword arguments other than "path"
         if kwargs:
             if "path" not in kwargs:
-                raise SyntaxError("Please provide the `path` argument.")
+                raise SyntaxError("Just provide the `path` argument.")
 
-        # name argument
         if args:
-            path = args[0]
+            self.path = args[0]
         else:
-            path = kwargs.values()[0]
-
-        #check for file extension
-        if path[-4:] != ".csv":
-            raise ValueError(f"Received {path}. Please provide a file with extension `.csv`.")
+            self.path = kwargs.values()["path"]
 
         # check if file exists
-        if not os.path.isfile(path):
-            raise ValueError(f"Path {path} doesn't exist.")
+        if not os.path.isfile(self.path):
+            raise ValueError(f"Path {self.path} doesn't exist.")
+        #check for file extension
+        if self.path[-4:] != ".csv":
+            raise ValueError(f"Received {self.path}. Please provide a file with extension `.csv`.")
+
+        return self.path
 
 
-        data = []
+    def ingest_csv(self, path):
+        csvdata = []
         with open(path, newline='\n') as csvfile:
             reader = csv.reader(csvfile, delimiter = ',')
             for row in reader:
-                data.append(row)
+                csvdata.append(row)
             
-        return data
+        return csvdata
 
 
-        
+    def __init__(self, *args, **kwargs):
+        if self.path_is_validated(*args, **kwargs):
+            self.data = self.ingest_csv(self.path)
 
 
+    def get_data(self):
+        return self.data
