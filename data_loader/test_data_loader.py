@@ -10,21 +10,21 @@ class TestDataSource(unittest.TestCase):
     
 
     def setUp(self):
-        # create empty file
+        # create empty csv file
         empty_file_name = 'empty_file.csv'
         if os.path.isfile(empty_file_name):
             os.remove(empty_file_name)
         with open(empty_file_name, "w") as f:
             f.write("")
 
-        # create file with one row
+        # create csv file with one row
         one_row_file_name = 'one_row_file.csv'
         if os.path.isfile(one_row_file_name ):
             os.remove(one_row_file_name)
         with open(one_row_file_name, "w") as f:
             f.write("1")
 
-        # create file with two rows
+        # create csvfile with two rows
         two_rows_file_name = 'two_rows_file.csv'
         if os.path.isfile(two_rows_file_name ):
             os.remove(two_rows_file_name)
@@ -32,7 +32,7 @@ class TestDataSource(unittest.TestCase):
             f.write("first row\n")
             f.write("second row")
 
-        # create file with two rows two cols
+        # create csvfile with two rows two cols
         two_rows_two_cols_name = 'two_rows_two_cols_file.csv'
         if os.path.isfile(two_rows_two_cols_name ):
             os.remove(two_rows_two_cols_name)
@@ -40,12 +40,21 @@ class TestDataSource(unittest.TestCase):
             f.write("1-1,1-2\n")
             f.write("2-1,2-2")
 
+        # create tsvfile with two rows two cols
+        tsv_two_rows_two_cols_name = 'tsv_two_rows_two_cols_file.tsv'
+        if os.path.isfile(tsv_two_rows_two_cols_name ):
+            os.remove(tsv_two_rows_two_cols_name)
+        with open(tsv_two_rows_two_cols_name, "w") as f:
+            f.write("1-1\t1-2\n")
+            f.write("2-1\t2-2")
+
 
     def tearDown(self):
         os.remove('empty_file.csv')
         os.remove('one_row_file.csv')
         os.remove('two_rows_file.csv')
         os.remove('two_rows_two_cols_file.csv')
+        os.remove('tsv_two_rows_two_cols_file.tsv')
 
 
     def test_DataSource_ingest_csv_fails_with_no_arguments(self):
@@ -90,6 +99,11 @@ class TestDataSource(unittest.TestCase):
 
     def test_DS_ingest_csv_returns_data_for_file_with_two_rows_two_cols(self):
         data = DataSource('two_rows_two_cols_file.csv').get_data()
+        self.assertEqual([["1-1", "1-2"],["2-1", "2-2"]], data)
+
+
+    def test_DS_ingest_tsv_returns_data_for_file_with_two_rows_two_cols(self):
+        data = DataSource('tsv_two_rows_two_cols_file.tsv').get_data()
         self.assertEqual([["1-1", "1-2"],["2-1", "2-2"]], data)
 
 
