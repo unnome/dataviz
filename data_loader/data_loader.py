@@ -8,6 +8,7 @@ class DataSource(object):
     data = []
     file_extension = None
     supported_file_extensions = {".csv", ".tsv"}
+    headers = []
 
 
     def get_file_extension_from_path(self):
@@ -88,11 +89,16 @@ class DataSource(object):
         return self.file_extension
 
 
+    def get_headers(self):
+        return self.headers
+
     def __init__(self, *args, **kwargs):
         if self.arguments_are_valid(*args, **kwargs):
             self.file_path = self.set_file_path(*args, **kwargs)
             if self.validate_path():
                 self.file_extension = self.get_file_extension_from_path()
                 self.data = self.ingest_data()
+                if self.data != []:
+                    self.headers = self.data[0]
 
 

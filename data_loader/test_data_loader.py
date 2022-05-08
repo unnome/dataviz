@@ -108,5 +108,14 @@ class TestDataSource(unittest.TestCase):
 
 
     def test_DS_get_file_extension_returns_file_extension(self):
+        file_extension = DataSource('two_rows_two_cols_file.csv').get_file_extension()
+        self.assertEqual('.csv', file_extension)
         file_extension = DataSource('tsv_two_rows_two_cols_file.tsv').get_file_extension()
         self.assertEqual('.tsv', file_extension)
+
+
+    def test_DS_get_column_headers_returns_first_row_of_data(self):
+        ds = DataSource('two_rows_two_cols_file.csv')
+        data = ds.get_data()
+        headers = ds.get_headers()
+        self.assertEqual(['1-1', '1-2'], headers)
